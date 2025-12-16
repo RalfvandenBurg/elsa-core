@@ -18,6 +18,7 @@ public class BackgroundWorkflowDispatcher(ICommandSender commandSender, ITenantA
     {
         var command = new DispatchWorkflowDefinitionCommand(request.DefinitionVersionId)
         {
+            ParentWorkflowInstanceId = request.ParentWorkflowInstanceId,
             Input = request.Input,
             Properties = request.Properties,
             CorrelationId = request.CorrelationId,
