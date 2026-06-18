@@ -12,7 +12,7 @@ public class Tests
     {
         ObjectConverter.StrictMode = true;
     }
-    
+
     [Fact]
     public void TryConvertTo_SameType_ReturnsSuccess()
     {
@@ -83,6 +83,23 @@ public class Tests
     }
 
     [Fact]
+    public void Format_ComplexObject_ReturnsJsonString()
+    {
+        // Arrange
+        var value = new ComplexPayload { NativeClientId = "native-client-1" };
+
+        // Act
+        var formatted = value.Format();
+
+        // Assert
+        Assert.Equal("{\"NativeClientId\":\"native-client-1\"}", formatted);
+
+        var roundTrippedValue = JsonSerializer.Deserialize<ComplexPayload>(formatted!);
+        Assert.NotNull(roundTrippedValue);
+        Assert.Equal("native-client-1", roundTrippedValue.NativeClientId);
+    }
+
+    [Fact]
     public void ConvertTo_JsonElementNumberToString_ReturnsString()
     {
         // Arrange
@@ -145,19 +162,13 @@ public class Tests
     public void ConvertTo_StringToByteArray_ReturnsByteArray()
     {
         // Arrange
-        var value = Convert.ToBase64String(new byte[]
-        {
-            1, 2, 3
-        });
+        var value = Convert.ToBase64String(new byte[] { 1, 2, 3 });
 
         // Act
         var result = value.ConvertTo<byte[]>();
 
         // Assert
-        Assert.Equal(new byte[]
-        {
-            1, 2, 3
-        }, result);
+        Assert.Equal(new byte[] { 1, 2, 3 }, result);
     }
 
     [Fact]
@@ -174,21 +185,13 @@ public class Tests
     public void ConvertTo_EnumerableToList_ReturnsConvertedList()
     {
         // Arrange
-        var value = new[]
-        {
-            "1", "2", "3"
-        };
+        var value = new[] { "1", "2", "3" };
 
         // Act
         var result = value.ConvertTo<List<int>>();
 
         // Assert
-        Assert.Equal(new()
-        {
-            1,
-            2,
-            3
-        }, result);
+        Assert.Equal([1, 2, 3], result);
     }
 
     [Fact]
@@ -306,11 +309,16 @@ public class Tests
     {
         // Arrange
         object[] objectArray = [1d, 2d, 3d];
-        
+
         // Act
         var result = objectArray.ConvertTo<double[]>();
-        
+
         // Assert
         Assert.NotNull(result);
+    }
+
+    private sealed class ComplexPayload
+    {
+        public string NativeClientId { get; set; } = string.Empty;
     }
 }
